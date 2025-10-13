@@ -1,10 +1,11 @@
 import {DynamicModule, Module} from '@nestjs/common';
 import { TypeOrmModule } from "@nestjs/typeorm";
-import {config} from "../omrconfig";
+import {config} from "../ormconfig";
 import { JwtModule } from "@nestjs/jwt";
 import { CacheModule } from "@nestjs/cache-manager";
 import { HttpModule } from "@nestjs/axios";
-import {APP_GUARD} from "@nestjs/core";
+import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 export function DatabaseOrmModule(): DynamicModule {
   return TypeOrmModule.forRoot(config);
@@ -12,6 +13,9 @@ export function DatabaseOrmModule(): DynamicModule {
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
+    DatabaseOrmModule(),
     CacheModule.register({
       isGlobal: true,
       ttl: 86400,
@@ -23,7 +27,6 @@ export function DatabaseOrmModule(): DynamicModule {
       signOptions: { expiresIn: '1d'},
     }),
     HttpModule,
-    DatabaseOrmModule()
   ],
   providers: [
     // {

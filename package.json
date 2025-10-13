@@ -1,5 +1,5 @@
 {
-  "name": "nome-do-projeto",
+  "name": "sistema-de-chat",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -18,17 +18,20 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "typeorm",
     "migration:create": "npm run typeorm migration:create",
-    "migration:run": "npm run build  && typeorm migration:run -d dist/ormconfig.js",
+    "migration:run": "npm run build && typeorm migration:run -d dist/ormconfig.js",
     "migration:revert": "typeorm migration:revert -d dist/ormconfig.js"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
     "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/schedule": "^6.0.1",
     "@nestjs/typeorm": "^11.0.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",

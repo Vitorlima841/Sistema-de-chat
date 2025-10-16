@@ -34,11 +34,4 @@ export class UsuarioController {
     async login(@Res() res: Response, @Body() dto: AuthUserDto): Promise<any> {
         return await this.authService.loginWithCredentials(res, dto.login, dto.senha);
     }
-
-    // @Public()
-    // @Get('/logout')
-    // async logout(@Res() res: Response): Promise<void> {
-    //     res.clearCookie(ConstantUtils.JWT_TOKEN);
-    //     res.send(MensagensGlobais.DESCONECTADO_COM_SUCESSO);
-    // }
 }

@@ -8,7 +8,7 @@ import {
     BaseEntity,
 } from 'typeorm';
 import {Usuario} from "./usuario.entity";
-import {SalaUsuario} from "./salaUsuario";
+import {SalaUsuarioEnity} from "./salaUsuario.enity";
 import {Sala} from "./sala.entity";
 
 @Entity({ name: 'mensagem' })

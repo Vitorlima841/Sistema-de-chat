@@ -12,7 +12,7 @@ import { Sala } from './sala.entity';
 import {TipoUsuario} from "../shared/enums/TipoUsuario";
 
 @Entity('sala_usuario')
-export class SalaUsuario extends BaseEntity{
+export class SalaUsuarioEnity extends BaseEntity{
     @PrimaryGeneratedColumn()
     id: number;
 

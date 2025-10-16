@@ -5,7 +5,7 @@ import {
     OneToMany,
     BaseEntity,
 } from 'typeorm';
-import {SalaUsuario} from "./salaUsuario";
+import {SalaUsuarioEnity} from "./salaUsuario.enity";
 import {TipoSala} from "../shared/enums/TipoSala.enum";
 import {Mensagem} from "./mensagem.entity";
 
@@ -28,8 +28,8 @@ export class Sala extends BaseEntity {
     @Column({ name: 'tipo' })
     tipoSala: TipoSala;
 
-    @OneToMany(() => SalaUsuario, (salaUsuario) => salaUsuario.sala)
-    participantes: SalaUsuario[];
+    @OneToMany(() => SalaUsuarioEnity, (salaUsuario) => salaUsuario.sala)
+    participantes: SalaUsuarioEnity[];
 
     @OneToMany(() => Mensagem, (mensagem) => mensagem.sala)
     mensagemsSala: Mensagem[];

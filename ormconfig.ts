@@ -7,7 +7,7 @@ export const config: ConnectionOptions = {
     port: 3306,
     username: 'root',
     password: 'root',
-    database: 'SistemaChat',
+    database: 'SistemaDeChat',
     entities: [__dirname + '/src/model/*.entity{.ts,.js}'],
     synchronize: false,
     logging: false,

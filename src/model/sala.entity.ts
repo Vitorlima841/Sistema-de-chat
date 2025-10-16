@@ -5,11 +5,11 @@ import {
     OneToMany,
     BaseEntity,
 } from 'typeorm';
-import {SalaUsuarioEnity} from "./salaUsuario.enity";
+import {SalaUsuario} from "./salaUsuario.entity";
 import {TipoSala} from "../shared/enums/TipoSala.enum";
 import {Mensagem} from "./mensagem.entity";
 
-@Entity({ name: 'sala' })
+@Entity({ name: 'Sala' })
 export class Sala extends BaseEntity {
     constructor(id?: number) {
         super();
@@ -26,13 +26,13 @@ export class Sala extends BaseEntity {
     descricao: string;
 
     @Column({ name: 'tipo' })
-    tipoSala: TipoSala;
+    tipo: TipoSala;
 
-    @OneToMany(() => SalaUsuarioEnity, (salaUsuario) => salaUsuario.sala)
-    participantes: SalaUsuarioEnity[];
+    @OneToMany(() => SalaUsuario, (salaUsuario) => salaUsuario.sala)
+    participantes: SalaUsuario[];
 
     @OneToMany(() => Mensagem, (mensagem) => mensagem.sala)
-    mensagemsSala: Mensagem[];
+    mensagems: Mensagem[];
 
     //todo verificar se precisa criar o campo "ativo"
 }

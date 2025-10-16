@@ -7,10 +7,10 @@ import {
   OneToMany,
   BaseEntity,
 } from 'typeorm';
-import {SalaUsuarioEnity} from "./salaUsuario.enity";
+import {SalaUsuario} from "./salaUsuario.entity";
 import {Mensagem} from "./mensagem.entity";
 
-@Entity({ name: 'usuario' })
+@Entity({ name: 'Usuario' })
 export class Usuario extends BaseEntity {
   constructor(id?: number) {
     super();
@@ -28,8 +28,8 @@ export class Usuario extends BaseEntity {
   @Column({ name: 'senha' })
   senha: string;
 
-  @OneToMany(() => SalaUsuarioEnity, (salaUsuario) => salaUsuario.usuario)
-  salasParticipantes: SalaUsuarioEnity[];
+  @OneToMany(() => SalaUsuario, (salaUsuario) => salaUsuario.usuario)
+  salasParticipantes: SalaUsuario[];
 
   @OneToMany(() => Mensagem, (mensagem) => mensagem.remetente)
   mensagemsRementente: Mensagem[];

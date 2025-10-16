@@ -1,5 +1,5 @@
 export enum TipoUsuario {
-    MEMBRO = 'Membro',
-    ADMIN = 'Admin',
-    DONO = 'Dono',
+    ADMIN = '1',
+    DONO = '2',
+    MEMBRO = '3',
 }

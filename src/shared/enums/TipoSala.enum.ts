@@ -1,4 +1,4 @@
 export enum TipoSala {
-    PRIVADA = 'Privada',
-    PUBLICA = 'Publica',
+    PRIVADA = '1',
+    PUBLICA = '2',
 }

@@ -6,6 +6,10 @@ import { CacheModule } from "@nestjs/cache-manager";
 import { HttpModule } from "@nestjs/axios";
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import {UsuarioModule} from "./service/usuario/usuario.module";
+import {AuthModule} from "./service/auth/auth.moule";
+import {APP_GUARD} from "@nestjs/core";
+import {JwtAuthGuard} from "./shared/guard/jwt-auth.guard";
 
 export function DatabaseOrmModule(): DynamicModule {
   return TypeOrmModule.forRoot(config);
@@ -16,6 +20,8 @@ export function DatabaseOrmModule(): DynamicModule {
     ConfigModule.forRoot(),
     ScheduleModule.forRoot(),
     DatabaseOrmModule(),
+    UsuarioModule,
+    AuthModule,
     CacheModule.register({
       isGlobal: true,
       ttl: 86400,
@@ -29,10 +35,10 @@ export function DatabaseOrmModule(): DynamicModule {
     HttpModule,
   ],
   providers: [
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: JwtAuthGuard,
-    // }
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    }
   ],
 })
 export class AppModule {}

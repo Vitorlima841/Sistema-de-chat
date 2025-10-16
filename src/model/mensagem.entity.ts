@@ -8,10 +8,10 @@ import {
     BaseEntity,
 } from 'typeorm';
 import {Usuario} from "./usuario.entity";
-import {SalaUsuarioEnity} from "./salaUsuario.enity";
+import {SalaUsuario} from "./salaUsuario.entity";
 import {Sala} from "./sala.entity";
 
-@Entity({ name: 'mensagem' })
+@Entity({ name: 'Mensagem' })
 export class Mensagem extends BaseEntity {
     constructor(id?: number) {
         super();
@@ -30,7 +30,7 @@ export class Mensagem extends BaseEntity {
     @ManyToOne(() => Usuario, (usuario) => usuario.mensagemsDestinatario)
     destinatario: Usuario;
 
-    @ManyToOne(() => Sala, (sala) => sala.mensagemsSala)
+    @ManyToOne(() => Sala, (sala) => sala.mensagems)
     sala: Sala;
 }
 

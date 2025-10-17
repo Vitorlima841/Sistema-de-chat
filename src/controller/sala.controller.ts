@@ -25,6 +25,7 @@ export class SalaController {
     }
 
     @Get()
+    
     async listarTodas() {
         return this.salaService.listarSalas();
     }

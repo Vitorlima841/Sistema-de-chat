@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import {Usuario} from "../../model/usuario.entity";
 import {UsuarioRepository} from "../../repository/usuario.repository";
 import {CriarUsuarioDto} from "../../shared/dto/CriarUsuario.dto";
@@ -37,17 +37,17 @@ export class SalaService {
     }
 
     async listarSalas() {
-        return this.salaRepository.find();
+        return this.salaRepository.listarSalas();
     }
 
     async entrarSala(idSala: number, usuarioToken: any) {
-        const sala = await this.salaRepository.findOne({
+        const sala = await Sala.findOne({
         where: { id: idSala },
         });
 
         if (!sala) throw new NotFoundException('Sala não encontrada.');
 
-        const usuario = await this.usuarioRepository.findOne({
+        const usuario = await Usuario.findOne({
         where: { id: usuarioToken.id },
         });
 
@@ -75,26 +75,24 @@ export class SalaService {
         if (!relacao)
             throw new NotFoundException('Usuário não está nesta sala.');
 
-        await this.salaUsuarioRepository.remove(relacao);
+        await SalaUsuario.remove(relacao);
         return { mensagem: `Usuário ${relacao.usuario.nome} saiu da sala ${relacao.sala.nome}.` };
     }
 
     async removerSala(idSala: number, usuarioToken: any) {
-        const sala = await this.salaRepository.findOne({
-        where: { id: idSala },
-        relations: ['dono'],
-        });
+        const sala = await this.salaRepository.findOne(idSala);
         if (!sala) throw new NotFoundException('Sala não encontrada.');
 
-        if (sala.dono.id !== usuarioToken.id)
-            throw new ForbiddenException('Apenas o dono da sala pode removê-la.');
+        //todo criar a validação
+        // if (sala.dono.id !== usuarioToken.id)
+        //     throw new ForbiddenException('Apenas o dono da sala pode removê-la.');
 
         await this.salaRepository.remove(sala);
         return { mensagem: `Sala '${sala.nome}' removida com sucesso.` };
     }
 
     async listarMinhasSalas(usuarioToken: any) {
-        const relacoes = await this.salaUsuarioRepository.find({
+        const relacoes = await SalaUsuario.find({
         where: { usuario: { id: usuarioToken.id } },
         relations: ['sala'],
         });

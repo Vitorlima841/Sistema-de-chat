@@ -8,14 +8,18 @@ import { Response, Request } from 'express';
 import { CriarSalaDto } from 'src/shared/dto/CriarSala.dto';
 import { SalaService } from 'src/service/sala/sala.service';
 
-@Controller('sala')
+@Controller('rooms')
 export class SalaController {
     constructor(
         private readonly salaService: SalaService,
     ) {}
 
     @Post()
-    async criarSala(@Body() data: CriarSalaDto) {
+    async criarSala(
+        @Body() data: CriarSalaDto,
+        @Req() req: Request,
+        @Res() res: Response
+    ) {
         const nomeDoUsuario = res.status(HttpStatus.OK).send(req["user"]);
         return this.salaService.criaSala(data, nomeDoUsuario);
     }
@@ -47,5 +51,23 @@ export class SalaController {
     async remover(@Param('id') id: number, @Req() req: Request) {
         const usuario = req['user'];
         return this.salaService.removerSala(id, usuario);
+    }
+
+    @Post("/rooms/:roomId/messages")
+    async enviarMensagemNaSala(
+        @Param("roomId") salaId: number,
+        @Body() conteudo: string,
+        @Req() req: Request,
+        @Res() res: Response
+    ) {
+        const nomeDoUsuario = res.status(HttpStatus.OK).send(req["user"]);
+        return this.salaService.enviarMensagemNaSala(salaId, conteudo, nomeDoUsuario);
+    }
+
+    @Get("/rooms/:roomId/messages")
+    async buscarMensagemsDaSala(
+        @Param("roomId") salaId: number
+    ) {
+        return this.salaService.buscarMensagemsDaSala(salaId);
     }
 }

@@ -6,7 +6,7 @@ import {Public} from "../shared/decorators/public-auth.decorator";
 import {AuthService} from "../service/auth/auth.service";
 import { Response, Request } from 'express';
 
-@Controller('user')
+@Controller('users')
 export class UsuarioController {
     constructor(
         private readonly usuarioService: UsuarioService,

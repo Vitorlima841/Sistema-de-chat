@@ -9,6 +9,7 @@ import { SalaUsuario } from 'src/model/salaUsuario.entity';
 import { TipoUsuario } from 'src/shared/enums/TipoUsuario';
 import { UsuarioService } from '../usuario/usuario.service';
 import { SalaUsuarioRepository } from 'src/repository/salaUsuario.repository';
+import {Mensagem} from "../../model/mensagem.entity";
 
 @Injectable()
 export class SalaService {
@@ -19,7 +20,7 @@ export class SalaService {
        private readonly salaUsuarioRepository: SalaUsuarioRepository,
     ) {}
 
-    async criaSala(dto: CriarSalaDto, nomeDoUsuario: string) {
+    async criaSala(dto: CriarSalaDto, nomeDoUsuario: any) {
         const usuario = await this.usuarioService.buscaPorLogin(nomeDoUsuario);
         const sala = new Sala();
         sala.nome = dto.nome;
@@ -100,6 +101,26 @@ export class SalaService {
         return relacoes.map((r) => r.sala);
     }
 
+    async buscaSalaPorId(salaId: number): Promise<Sala>{
+        return await Sala.findOne({
+            where: { id: salaId }
+        })
+    }
 
+    async enviarMensagemNaSala(salaId: number, conteudo: string, nomeDoUsuario: any) {
+        const remetente: Usuario = await this.usuarioService.buscaPorLogin(nomeDoUsuario);
+        const sala: Sala = await this.buscaSalaPorId(salaId);
+        const mensagem = new Mensagem();
+        mensagem.remetente = remetente;
+        mensagem.conteudo = conteudo;
+        mensagem.sala = sala;
 
+        await Mensagem.save(mensagem);
+
+        //todo conexção com o web socket
+    }
+
+    async buscarMensagemsDaSala(salaId: number){
+        return await this.salaRepository.buscarMensagemsDaSala(salaId);
+    }
 }

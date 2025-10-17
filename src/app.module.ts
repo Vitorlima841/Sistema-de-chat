@@ -10,6 +10,8 @@ import {UsuarioModule} from "./service/usuario/usuario.module";
 import {AuthModule} from "./service/auth/auth.moule";
 import {APP_GUARD} from "@nestjs/core";
 import {JwtAuthGuard} from "./shared/guard/jwt-auth.guard";
+import {MensagemModule} from "./service/mensagem/mensagem.module";
+import {SalaModule} from "./service/sala/sala.module";
 
 export function DatabaseOrmModule(): DynamicModule {
   return TypeOrmModule.forRoot(config);
@@ -22,6 +24,8 @@ export function DatabaseOrmModule(): DynamicModule {
     DatabaseOrmModule(),
     UsuarioModule,
     AuthModule,
+    MensagemModule,
+    SalaModule,
     CacheModule.register({
       isGlobal: true,
       ttl: 86400,

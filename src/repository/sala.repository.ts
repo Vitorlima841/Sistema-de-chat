@@ -15,5 +15,9 @@ export class SalaRepository {
         return this.find();
     }
 
-
+    async buscarMensagemsDaSala(salaId: number){
+        return await Sala.createQueryBuilder("sala")
+            .where("sala.id == :salaId", {salaId})
+            .getMany();
+    }
 }

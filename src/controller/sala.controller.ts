@@ -15,8 +15,37 @@ export class SalaController {
     ) {}
 
     @Post()
-    async criar(@Body() data: CriarSalaDto) {
+    async criarSala(@Body() data: CriarSalaDto) {
         const nomeDoUsuario = res.status(HttpStatus.OK).send(req["user"]);
         return this.salaService.criaSala(data, nomeDoUsuario);
+    }
+
+    @Get()
+    async listarTodas() {
+        return this.salaService.listarSalas();
+    }
+
+    @Get('minhas')
+    async listarMinhas(@Req() req: Request) {
+        const usuario = req['user'];
+        return this.salaService.listarMinhasSalas(usuario);
+    }
+
+    @Post(':id/entrar')
+    async entrar(@Param('id') id: number, @Req() req: Request) {
+        const usuario = req['user'];
+        return this.salaService.entrarSala(id, usuario);
+    }
+
+    @Post(':id/sair')
+    async sair(@Param('id') id: number, @Req() req: Request) {
+        const usuario = req['user'];
+        return this.salaService.sairSala(id, usuario);
+    }
+
+    @Delete(':id')
+    async remover(@Param('id') id: number, @Req() req: Request) {
+        const usuario = req['user'];
+        return this.salaService.removerSala(id, usuario);
     }
 }

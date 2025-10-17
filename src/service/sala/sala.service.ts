@@ -8,12 +8,15 @@ import { SalaRepository } from 'src/repository/sala.repository';
 import { SalaUsuario } from 'src/model/salaUsuario.entity';
 import { TipoUsuario } from 'src/shared/enums/TipoUsuario';
 import { UsuarioService } from '../usuario/usuario.service';
+import { SalaUsuarioRepository } from 'src/repository/salaUsuario.repository';
 
 @Injectable()
 export class SalaService {
     constructor(
        private readonly salaRepository: SalaRepository,
        private readonly usuarioService: UsuarioService,
+       private readonly usuarioRepository: UsuarioRepository,
+       private readonly salaUsuarioRepository: SalaUsuarioRepository,
     ) {}
 
     async criaSala(dto: CriarSalaDto, nomeDoUsuario: string) {
@@ -31,5 +34,72 @@ export class SalaService {
         await SalaUsuario.save(salaUsuario);
         return salaSalva;
     }
+
+    async listarSalas() {
+        return this.salaRepository.find();
+    }
+
+    async entrarSala(idSala: number, usuarioToken: any) {
+        const sala = await this.salaRepository.findOne({
+        where: { id: idSala },
+        });
+
+        if (!sala) throw new NotFoundException('Sala não encontrada.');
+
+        const usuario = await this.usuarioRepository.findOne({
+        where: { id: usuarioToken.id },
+        });
+
+        if (!usuario) throw new BadRequestException('Usuário inválido.');
+
+        const jaEstaNaSala = await this.salaUsuarioRepository.findOne({
+        where: { sala: { id: idSala }, usuario: { id: usuario.id } },
+        });
+
+        if (jaEstaNaSala)
+        throw new BadRequestException('Usuário já está participando desta sala.');
+
+        const novaRelacao = this.salaUsuarioRepository.create({sala,usuario,});
+
+        await this.salaUsuarioRepository.save(novaRelacao);
+        return { mensagem: `Usuário ${usuario.nome} entrou na sala ${sala.nome}.` };
+    }
+
+    async sairSala(idSala: number, usuarioToken: any) {
+        const relacao = await this.salaUsuarioRepository.findOne({
+        where: { sala: { id: idSala }, usuario: { id: usuarioToken.id } },
+        relations: ['sala', 'usuario'],
+        });
+
+        if (!relacao)
+            throw new NotFoundException('Usuário não está nesta sala.');
+
+        await this.salaUsuarioRepository.remove(relacao);
+        return { mensagem: `Usuário ${relacao.usuario.nome} saiu da sala ${relacao.sala.nome}.` };
+    }
+
+    async removerSala(idSala: number, usuarioToken: any) {
+        const sala = await this.salaRepository.findOne({
+        where: { id: idSala },
+        relations: ['dono'],
+        });
+        if (!sala) throw new NotFoundException('Sala não encontrada.');
+
+        if (sala.dono.id !== usuarioToken.id)
+            throw new ForbiddenException('Apenas o dono da sala pode removê-la.');
+
+        await this.salaRepository.remove(sala);
+        return { mensagem: `Sala '${sala.nome}' removida com sucesso.` };
+    }
+
+    async listarMinhasSalas(usuarioToken: any) {
+        const relacoes = await this.salaUsuarioRepository.find({
+        where: { usuario: { id: usuarioToken.id } },
+        relations: ['sala'],
+        });
+        return relacoes.map((r) => r.sala);
+    }
+
+
 
 }

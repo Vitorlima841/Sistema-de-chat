@@ -11,5 +11,9 @@ export class SalaRepository {
         return await Sala.save(sala);
     }
 
+    async listarSalas() {
+        return this.find();
+    }
+
 
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {DataSource} from "typeorm";
 import {Usuario} from "../model/usuario.entity";
 
@@ -20,12 +20,22 @@ export class UsuarioRepository {
         return usuario;
     }
 
+    async buscaPorNome(nome: string): Promise<Usuario> {
+        const usuario = await Usuario.findOne({
+            where: { nome: nome }
+        });
+        if (!usuario) {
+            throw new BadRequestException("Usuário não encontrado");
+        }
+        return usuario;
+    }
+
     async buscaPorLogin(login: string): Promise<Usuario> {
         const usuario = await Usuario.findOne({
             where: { login: login }
         });
         if (!usuario) {
-            throw new Error("Usuário não encontrado");
+            throw new BadRequestException("Usuário não encontrado");
         }
         return usuario;
     }

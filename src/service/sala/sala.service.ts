@@ -18,8 +18,8 @@ export class SalaService {
        private readonly usuarioRepository: UsuarioRepository,
     ) {}
 
-    async criaSala(dto: CriarSalaDto, nomeDoUsuario: any) {
-        const usuario = await this.usuarioService.buscaPorLogin(nomeDoUsuario);
+    async criaSala(dto: CriarSalaDto, nomeDoUsuario: string) {
+        const usuario = await this.usuarioService.buscaPorNome(nomeDoUsuario);
         const sala = new Sala();
         sala.nome = dto.nome;
         sala.descricao = dto.descricao;
@@ -28,8 +28,8 @@ export class SalaService {
 
         const salaUsuario = new SalaUsuario();
         salaUsuario.cargo = TipoUsuario.DONO;
-        salaUsuario.sala = salaSalva;
-        salaUsuario.usuario = usuario;
+        salaUsuario.sala = salaSalva.id;
+        salaUsuario.usuario = usuario.id;
         await SalaUsuario.save(salaUsuario);
         return salaSalva;
     }
@@ -51,34 +51,34 @@ export class SalaService {
 
         if (!usuario) throw new BadRequestException('Usuário inválido.');
 
-        const jaEstaNaSala = await SalaUsuario.findOne({
-            where: { sala: { id: idSala }, usuario: { id: usuario.id } },
-        });
+        // const jaEstaNaSala = await SalaUsuario.findOne({
+        //     where: { sala: { id: idSala }, usuario: { id: usuario.id } },
+        // });
+        //
+        // if (jaEstaNaSala)
+        // throw new BadRequestException('Usuário já está participando desta sala.');
 
-        if (jaEstaNaSala)
-        throw new BadRequestException('Usuário já está participando desta sala.');
-
-        const novaRelacao = SalaUsuario.create({sala,usuario,});
-
-        await SalaUsuario.save(novaRelacao);
+        // const novaRelacao = SalaUsuario.create({sala,usuario,}); //todo
+        //
+        // await SalaUsuario.save(novaRelacao);
         return { mensagem: `Usuário ${usuario.nome} entrou na sala ${sala.nome}.` };
     }
 
-    async sairSala(idSala: number, usuarioToken: any) {
-        const relacao = await SalaUsuario.findOne({
-        where: { sala: { id: idSala }, usuario: { id: usuarioToken.id } },
-        relations: ['sala', 'usuario'],
-        });
-
-        if (!relacao)
-            throw new NotFoundException('Usuário não está nesta sala.');
-
-        await SalaUsuario.remove(relacao);
-        return { mensagem: `Usuário ${relacao.usuario.nome} saiu da sala ${relacao.sala.nome}.` };
-    }
+    // async sairSala(idSala: number, usuarioToken: any) {
+    //     const relacao = await SalaUsuario.findOne({
+    //     where: { sala: { id: idSala }, usuario: { id: usuarioToken.id } },
+    //     relations: ['sala', 'usuario'],
+    //     });
+    //
+    //     if (!relacao)
+    //         throw new NotFoundException('Usuário não está nesta sala.');
+    //
+    //     await SalaUsuario.remove(relacao);
+    //     return { mensagem: `Usuário ${relacao.usuario.nome} saiu da sala ${relacao.sala.nome}.` };
+    // }
 
     async removerSala(idSala: number, usuarioToken: any) {
-        const sala = await this.salaRepository.findOne(idSala);
+        const sala = await this.salaRepository.buscaSalaPorId(idSala);
         if (!sala) throw new NotFoundException('Sala não encontrada.');
 
         //todo criar a validação
@@ -89,13 +89,30 @@ export class SalaService {
         return { mensagem: `Sala '${sala.nome}' removida com sucesso.` };
     }
 
-    async listarMinhasSalas(usuarioToken: any) {
-        const relacoes = await SalaUsuario.find({
-        where: { usuario: { id: usuarioToken.id } },
-        relations: ['sala'],
-        });
-        return relacoes.map((r) => r.sala);
+    async removerUsuarioDaSala(salaId: number, usuarioParaRemoverId: number, nomeUsuario: string) {
+        const sala = await this.salaRepository.buscaSalaPorId(salaId);
+        const usuario: Usuario = await this.usuarioService.buscaPorNome(nomeUsuario);
+        if (!sala) {
+            throw new NotFoundException('Sala não encontrada.');
+        }
+
+        await this.validaPermicaoRemover(sala, usuario)
+
+        await this.salaRepository.remove(sala);
+        return { mensagem: `Sala '${sala.nome}' removida com sucesso.` };
     }
+
+    async validaPermicaoRemover(sala: Sala, usuario: Usuario) {
+        await this.salaRepository.validaPermicaoRemover(sala, usuario)
+    }
+
+    // async listarMinhasSalas(usuarioToken: any) {
+    //     const relacoes = await SalaUsuario.find({
+    //     where: { usuario: { id: usuarioToken.id } },
+    //     relations: ['sala'],
+    //     });
+    //     return relacoes.map((r) => r.sala);
+    // }
 
     async buscaSalaPorId(salaId: number): Promise<Sala>{
         return await Sala.findOne({
@@ -103,8 +120,8 @@ export class SalaService {
         })
     }
 
-    async enviarMensagemNaSala(salaId: number, conteudo: string, nomeDoUsuario: any) {
-        const remetente: Usuario = await this.usuarioService.buscaPorLogin(nomeDoUsuario);
+    async enviarMensagemNaSala(salaId: number, conteudo: string, nomeDoUsuario: string) {
+        const remetente: Usuario = await this.usuarioService.buscaPorNome(nomeDoUsuario);
         const sala: Sala = await this.buscaSalaPorId(salaId);
         const mensagem = new Mensagem();
         mensagem.remetente = remetente;

@@ -21,6 +21,10 @@ export class UsuarioService {
         return this.usuarioRepository.buscaPorId(id);
     }
 
+    buscaPorNome(nome: string) {
+        return this.usuarioRepository.buscaPorNome(nome);
+    }
+
     buscaPorLogin(login: string) {
         return this.usuarioRepository.buscaPorLogin(login);
     }

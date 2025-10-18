@@ -23,32 +23,9 @@ export class SalaController {
         @Req() req: Request,
         @Res() res: Response
     ) {
-        const nomeDoUsuario = res.status(HttpStatus.OK).send(req["user"]);
-        const sala  = await this.salaService.criaSala(data, nomeDoUsuario);
+        const nomeDoUsuario = req["user"];
+        const sala  = await this.salaService.criaSala(data, nomeDoUsuario["nome"]);
         return res.status(HttpStatus.CREATED).send(sala);
-    }
-
-    @Get()
-    async listarTodas() {
-        return this.salaService.listarSalas();
-    }
-
-    @Get('minhas')
-    async listarMinhas(@Req() req: Request) {
-        const usuario = req['user'];
-        return this.salaService.listarMinhasSalas(usuario);
-    }
-
-    @Post(':id/entrar')
-    async entrar(@Param('id') id: number, @Req() req: Request) {
-        const usuario = req['user'];
-        return this.salaService.entrarSala(id, usuario);
-    }
-
-    @Post(':id/sair')
-    async sair(@Param('id') id: number, @Req() req: Request) {
-        const usuario = req['user'];
-        return this.salaService.sairSala(id, usuario);
     }
 
     @ApiOperation({ summary: 'Remove uma sala (apenas pelo dono ou administrador)' })
@@ -59,6 +36,41 @@ export class SalaController {
         return this.salaService.removerSala(id, usuario);
     }
 
+    @ApiOperation({ summary: 'Adiciona um usuário autenticado a uma sala' })
+    @ApiResponse({ status: 200, description: 'Usuário adicionado com sucesso' })
+    @Post(':id/enter')
+    async entrar(@Param('id') id: number, @Req() req: Request) {
+        const usuario = req['user'];
+        return this.salaService.entrarSala(id, usuario);
+    }
+
+    // @ApiOperation({ summary: 'Remove um usuário autenticado de uma sala' })
+    // @ApiResponse({ status: 200, description: 'Usuário removido com sucesso' })
+    // @Post(':id/leave')
+    // async sair(@Param('id') id: number, @Req() req: Request) {
+    //     const usuario = req['user'];
+    //     return this.salaService.sairSala(id, usuario);
+    // }
+
+    @ApiOperation({ summary: 'Remove um usuário específico de uma sala (apenas pelo dono ou administrador).' })
+    @ApiResponse({ status: 200, description: 'Usuário removido com sucesso' })
+    @Delete(':roomId/users/:userId')
+    async removerUsuarioDaSala(
+        @Param('roomId') salaId: number,
+        @Param('userId') usuarioParaRemoverId: number,
+        @Req() req: Request
+    ) {
+        const usuario = req['user'];
+        return this.salaService.removerUsuarioDaSala(salaId, usuarioParaRemoverId,usuario["nome"]);
+    }
+
+    @ApiOperation({ summary: 'Lista todas as salas ativas' })
+    @ApiResponse({ status: 200, description: 'Salas listadas com sucesso' })
+    @Get()
+    async listarTodas() {
+        return this.salaService.listarSalas();
+    }
+
     @Post("/rooms/:roomId/messages")
     async enviarMensagemNaSala(
         @Param("roomId") salaId: number,
@@ -66,8 +78,8 @@ export class SalaController {
         @Req() req: Request,
         @Res() res: Response
     ) {
-        const nomeDoUsuario = res.status(HttpStatus.OK).send(req["user"]);
-        return this.salaService.enviarMensagemNaSala(salaId, conteudo, nomeDoUsuario);
+        const nomeDoUsuario = req["user"];
+        return this.salaService.enviarMensagemNaSala(salaId, conteudo, nomeDoUsuario["nome"]);
     }
 
     @Get("/rooms/:roomId/messages")

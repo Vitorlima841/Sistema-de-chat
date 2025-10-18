@@ -16,9 +16,9 @@ export class MensagemService {
         private readonly gateway: MensagemGeteway
     ) {}
 
-    async enviarMensagemDireta(destinatarioId: number, nomeDoUsuario: any, conteudo: string) {
+    async enviarMensagemDireta(destinatarioId: number, nomeDoUsuario: string, conteudo: string) {
         const destinatario: Usuario = await this.usuarioService.buscaPorId(destinatarioId);
-        const remetente: Usuario = await this.usuarioService.buscaPorLogin(nomeDoUsuario);
+        const remetente: Usuario = await this.usuarioService.buscaPorNome(nomeDoUsuario);
 
         const mensagem = new Mensagem();
         mensagem.destinatario = destinatario;

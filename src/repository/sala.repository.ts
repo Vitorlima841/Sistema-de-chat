@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Sala } from 'src/model/sala.entity';
+import {Usuario} from "../model/usuario.entity";
+import {SalaUsuario} from "../model/salaUsuario.entity";
+import {TipoUsuario} from "../shared/enums/TipoUsuario";
 
 @Injectable()
 export class SalaRepository {
@@ -23,7 +26,7 @@ export class SalaRepository {
         return Sala.createQueryBuilder('sala').getMany();
     }
 
-    async findOne(id: number): Promise<Sala | null> {
+    async buscaSalaPorId(id: number): Promise<Sala | null> {
         return await Sala.findOne({
             where: { id },
             relations: ['dono'], 
@@ -32,5 +35,16 @@ export class SalaRepository {
 
     async remove(sala: Sala): Promise<Sala> {
         return await Sala.remove(sala);
+    }
+
+    async validaPermicaoRemover(sala: Sala, usuario: Usuario) {
+        const teste = await Sala.createQueryBuilder('sala')
+            .innerJoin("sala_usuario", "sl_usu", "sl_usu.sala_id = sala.id")
+            .innerJoin("usuario", "usu", "usu.id = sl_usu.usuario_id")
+            .where("sala.id = :salaId", {salaId: sala.id})
+            .andWhere("usu.id = :usuarioId", {usuarioId: usuario.id})
+            .andWhere("sala_usuario.cargo in (:cargos)", {cargos: [TipoUsuario.DONO, TipoUsuario.ADMIN]})
+            .getMany();
+        console.log(teste);
     }
 }

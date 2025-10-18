@@ -13,6 +13,7 @@ export class UsuarioController {
         private readonly authService: AuthService,
     ) {}
 
+    @Public()
     @Post()
     async create(@Body() data: CriarUsuarioDto) {
         return this.usuarioService.criaUsuario(data);

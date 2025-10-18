@@ -25,7 +25,7 @@ export class MensagemController {
         @Req() req: Request,
         @Res() res: Response
     ) {
-        const nomeDoUsuario = res.status(HttpStatus.OK).send(req["user"]);
-        return this.mensagemService.enviarMensagemDireta(destinatarioId, nomeDoUsuario, conteudo);
+        const nomeDoUsuario = req["user"];
+        return this.mensagemService.enviarMensagemDireta(destinatarioId, nomeDoUsuario["nome"], conteudo);
     }
 }

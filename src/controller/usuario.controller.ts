@@ -5,6 +5,7 @@ import {UsuarioService} from "../service/usuario/usuario.service";
 import {Public} from "../shared/decorators/public-auth.decorator";
 import {AuthService} from "../service/auth/auth.service";
 import { Response, Request } from 'express';
+import {ApiParam} from "@nestjs/swagger";
 
 @Controller('users')
 export class UsuarioController {
@@ -24,7 +25,12 @@ export class UsuarioController {
         return res.status(HttpStatus.OK).send(req["user"]);
     }
 
-
+    @ApiParam({
+        name: 'id',
+        required: true,
+        description: 'ID do usuário',
+        example: 1,
+    })
     @Get('/:id')
     buscaPorId(@Param("id") id: number) {
         return this.usuarioService.buscaPorId(id);

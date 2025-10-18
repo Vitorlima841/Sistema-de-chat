@@ -8,7 +8,8 @@ import { Response, Request } from 'express';
 import { CriarSalaDto } from 'src/shared/dto/CriarSala.dto';
 import { SalaService } from 'src/service/sala/sala.service';
 import {MensagemService} from "../service/mensagem/mensagem.service";
-import {ApiOperation, ApiResponse} from "@nestjs/swagger";
+import {ApiOperation, ApiParam, ApiResponse} from "@nestjs/swagger";
+import {EnviarMensagemDto} from "../shared/dto/EnviarMensagem.dto";
 
 @Controller('messages')
 export class MensagemController {
@@ -16,16 +17,20 @@ export class MensagemController {
         private readonly mensagemService: MensagemService,
     ) {}
 
-    @ApiOperation({ summary: 'Envia mensagem direta a outro usuário.' })
     @ApiResponse({ status: 200, description: 'Mensagem criada com sucesso' })
+    @ApiParam({
+        name: 'receiverId',
+        required: true,
+        description: 'ID do destinatário',
+        example: 7,
+    })
     @Post("/direct/:receiverId")
     async enviarMensagemDireta(
         @Param("receiverId") destinatarioId: number,
-        @Body() conteudo: string,
-        @Req() req: Request,
-        @Res() res: Response
+        @Body() conteudo: EnviarMensagemDto,
+        @Req() req: Request
     ) {
-        const nomeDoUsuario = req["user"];
-        return this.mensagemService.enviarMensagemDireta(destinatarioId, nomeDoUsuario["nome"], conteudo);
+        const loginDoUsuario = req["user"];
+        return this.mensagemService.enviarMensagemDireta(destinatarioId, loginDoUsuario["login"], conteudo);
     }
 }

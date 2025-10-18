@@ -25,12 +25,16 @@ export class Mensagem extends BaseEntity {
     conteudo: string;
 
     @ManyToOne(() => Usuario, (usuario) => usuario.mensagemsRementente)
+    @JoinColumn({ name: 'remetente_id' })
     remetente: Usuario;
 
     @ManyToOne(() => Usuario, (usuario) => usuario.mensagemsDestinatario)
+    @JoinColumn({ name: 'destinatario_id' })
     destinatario: Usuario;
 
     @ManyToOne(() => Sala, (sala) => sala.mensagems)
+    @JoinColumn({ name: 'sala_id' })
     sala: Sala;
+
 }
 

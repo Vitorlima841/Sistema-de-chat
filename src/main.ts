@@ -8,7 +8,6 @@ async function bootstrap() {
       .setTitle('API de Mensagens')
       .setDescription('Documentação da API do projeto')
       .setVersion('1.0')
-      .addTag('mensagens')
       .build();
 
   const document = SwaggerModule.createDocument(app, config);

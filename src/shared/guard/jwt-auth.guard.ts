@@ -28,7 +28,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
         try {
             const payload = await this.authService.checkToken(token);
             const usuario = new DetalheUsuarioDto();
-            usuario.nome = payload["login"];
+            usuario.login = payload["login"];
             request["user"] = usuario;
         } catch {
             throw new UnauthorizedException();

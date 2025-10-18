@@ -7,7 +7,8 @@ import {AuthService} from "../service/auth/auth.service";
 import {Response, Request} from 'express';
 import { CriarSalaDto } from 'src/shared/dto/CriarSala.dto';
 import { SalaService } from 'src/service/sala/sala.service';
-import {ApiOperation, ApiResponse} from "@nestjs/swagger";
+import {ApiOperation, ApiParam, ApiResponse} from "@nestjs/swagger";
+import {EnviarMensagemDto} from "../shared/dto/EnviarMensagem.dto";
 
 @Controller('rooms')
 export class SalaController {
@@ -15,45 +16,70 @@ export class SalaController {
         private readonly salaService: SalaService,
     ) {}
 
-    @ApiOperation({ summary: 'Cria uma nova sala de chat' })
-    @ApiResponse({ status: 200, description: 'Sala criada com sucesso' })
+    @ApiResponse({ status: 201, description: 'Sala criada com sucesso' })
     @Post()
     async criarSala(
         @Body() data: CriarSalaDto,
         @Req() req: Request,
         @Res() res: Response
     ) {
-        const nomeDoUsuario = req["user"];
-        const sala  = await this.salaService.criaSala(data, nomeDoUsuario["nome"]);
+        const loginDoUsuario = req["user"];
+        const sala  = await this.salaService.criaSala(data, loginDoUsuario["login"]);
         return res.status(HttpStatus.CREATED).send(sala);
     }
 
-    @ApiOperation({ summary: 'Remove uma sala (apenas pelo dono ou administrador)' })
     @ApiResponse({ status: 200, description: 'Sala deletada com sucesso' })
+    @ApiParam({
+        name: 'id',
+        required: true,
+        description: 'ID da sala',
+        example: 7,
+    })
     @Delete(':id')
     async remover(@Param('id') id: number, @Req() req: Request) {
         const usuario = req['user'];
-        return this.salaService.removerSala(id, usuario);
+        return this.salaService.removerSala(id, usuario["login"]);
     }
 
-    @ApiOperation({ summary: 'Adiciona um usuário autenticado a uma sala' })
     @ApiResponse({ status: 200, description: 'Usuário adicionado com sucesso' })
+    @ApiParam({
+        name: 'id',
+        required: true,
+        description: 'ID da sala',
+        example: 9,
+    })
     @Post(':id/enter')
     async entrar(@Param('id') id: number, @Req() req: Request) {
         const usuario = req['user'];
-        return this.salaService.entrarSala(id, usuario);
+        return this.salaService.entrarSala(id, usuario["login"]);
     }
 
-    // @ApiOperation({ summary: 'Remove um usuário autenticado de uma sala' })
-    // @ApiResponse({ status: 200, description: 'Usuário removido com sucesso' })
-    // @Post(':id/leave')
-    // async sair(@Param('id') id: number, @Req() req: Request) {
-    //     const usuario = req['user'];
-    //     return this.salaService.sairSala(id, usuario);
-    // }
-
-    @ApiOperation({ summary: 'Remove um usuário específico de uma sala (apenas pelo dono ou administrador).' })
     @ApiResponse({ status: 200, description: 'Usuário removido com sucesso' })
+    @ApiParam({
+        name: 'id',
+        required: true,
+        description: 'ID da sala',
+        example: 8,
+    })
+    @Post(':id/leave')
+    async sair(@Param('id') id: number, @Req() req: Request) {
+        const usuario = req['user'];
+        return this.salaService.sairSala(id, usuario["login"]);
+    }
+
+    @ApiResponse({ status: 200, description: 'Usuário removido com sucesso' })
+    @ApiParam({
+        name: 'roomId',
+        required: true,
+        description: 'ID da sala',
+        example: 9,
+    })
+    @ApiParam({
+        name: 'userId',
+        required: true,
+        description: 'ID do usuário',
+        example: 8,
+    })
     @Delete(':roomId/users/:userId')
     async removerUsuarioDaSala(
         @Param('roomId') salaId: number,
@@ -61,28 +87,38 @@ export class SalaController {
         @Req() req: Request
     ) {
         const usuario = req['user'];
-        return this.salaService.removerUsuarioDaSala(salaId, usuarioParaRemoverId,usuario["nome"]);
+        return this.salaService.removerUsuarioDaSala(salaId, usuarioParaRemoverId,usuario["login"]);
     }
 
-    @ApiOperation({ summary: 'Lista todas as salas ativas' })
     @ApiResponse({ status: 200, description: 'Salas listadas com sucesso' })
     @Get()
     async listarTodas() {
         return this.salaService.listarSalas();
     }
 
-    @Post("/rooms/:roomId/messages")
+    @Post(":roomId/messages")
+    @ApiParam({
+        name: 'roomId',
+        required: true,
+        description: 'ID da sala',
+        example: 13,
+    })
     async enviarMensagemNaSala(
         @Param("roomId") salaId: number,
-        @Body() conteudo: string,
+        @Body() conteudo: EnviarMensagemDto,
         @Req() req: Request,
-        @Res() res: Response
     ) {
         const nomeDoUsuario = req["user"];
-        return this.salaService.enviarMensagemNaSala(salaId, conteudo, nomeDoUsuario["nome"]);
+        return this.salaService.enviarMensagemNaSala(salaId, conteudo.conteudo, nomeDoUsuario["login"]);
     }
 
-    @Get("/rooms/:roomId/messages")
+    @Get(":roomId/messages")
+    @ApiParam({
+        name: 'roomId',
+        required: true,
+        description: 'ID da sala',
+        example: 13,
+    })
     async buscarMensagemsDaSala(
         @Param("roomId") salaId: number
     ) {

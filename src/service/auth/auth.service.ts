@@ -26,8 +26,8 @@ export class AuthService {
         return usuario;
     }
 
-    async loginWithCredentials(res: Response, nome: string, senha: string) {
-        const usuario = await this.validaUsuario(nome, senha);
+    async loginWithCredentials(res: Response, login: string, senha: string) {
+        const usuario = await this.validaUsuario(login, senha);
         const payload = { id: usuario.id, login: usuario.login };
         const jwt = this.jwtService.sign(payload);
 

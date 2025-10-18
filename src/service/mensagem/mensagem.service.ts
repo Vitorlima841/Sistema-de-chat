@@ -6,6 +6,7 @@ import {MensagemRepository} from "../../repository/mensagem.repository";
 import {Mensagem} from "../../model/mensagem.entity";
 import {UsuarioService} from "../usuario/usuario.service";
 import {MensagemGeteway} from "../../controller/mensagem.geteway";
+import {EnviarMensagemDto} from "../../shared/dto/EnviarMensagem.dto";
 
 
 @Injectable()
@@ -16,17 +17,17 @@ export class MensagemService {
         private readonly gateway: MensagemGeteway
     ) {}
 
-    async enviarMensagemDireta(destinatarioId: number, nomeDoUsuario: string, conteudo: string) {
+    async enviarMensagemDireta(destinatarioId: number, loginDoUsuario: string, enviarMensagem: EnviarMensagemDto) {
         const destinatario: Usuario = await this.usuarioService.buscaPorId(destinatarioId);
-        const remetente: Usuario = await this.usuarioService.buscaPorNome(nomeDoUsuario);
+        const remetente: Usuario = await this.usuarioService.buscaPorLogin(loginDoUsuario);
 
         const mensagem = new Mensagem();
         mensagem.destinatario = destinatario;
         mensagem.remetente = remetente;
-        mensagem.conteudo = conteudo;
+        mensagem.conteudo = enviarMensagem.conteudo;
 
         await this.mensagemRepository.salvaMensagem(mensagem);
 
-        this.gateway.enviaMensagemDireta(destinatarioId, conteudo);
+        // this.gateway.enviaMensagemDireta(destinatarioId, enviarMensagem.conteudo);
     }
 }

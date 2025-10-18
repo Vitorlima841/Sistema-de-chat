@@ -1,3 +1,3 @@
 export class DetalheUsuarioDto {
-    nome: string;
+    login: string;
 }

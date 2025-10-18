@@ -18,10 +18,10 @@ export class SalaService {
        private readonly usuarioRepository: UsuarioRepository,
     ) {}
 
-    async criaSala(dto: CriarSalaDto, nomeDoUsuario: string) {
-        const usuario = await this.usuarioService.buscaPorNome(nomeDoUsuario);
+    async criaSala(dto: CriarSalaDto, loginDoUsuario: string) {
+        const usuario = await this.usuarioService.buscaPorLogin(loginDoUsuario);
         const sala = new Sala();
-        sala.nome = dto.nome;
+        sala.nome = dto.nomeDaSala;
         sala.descricao = dto.descricao;
         sala.tipo = dto.tipo;
         const salaSalva = await this.salaRepository.salvaSala(sala);
@@ -38,72 +38,71 @@ export class SalaService {
         return this.salaRepository.listarSalas();
     }
 
-    async entrarSala(idSala: number, usuarioToken: any) {
-        const sala = await Sala.findOne({
-        where: { id: idSala },
-        });
-
+    async entrarSala(salaId: number, loginUsuario: string) {
+        const sala = await this.buscaSalaPorId(salaId);
         if (!sala) throw new NotFoundException('Sala não encontrada.');
 
-        const usuario = await Usuario.findOne({
-        where: { id: usuarioToken.id },
-        });
-
+        const usuario = await this.usuarioService.buscaPorLogin(loginUsuario);
         if (!usuario) throw new BadRequestException('Usuário inválido.');
 
-        // const jaEstaNaSala = await SalaUsuario.findOne({
-        //     where: { sala: { id: idSala }, usuario: { id: usuario.id } },
-        // });
-        //
-        // if (jaEstaNaSala)
-        // throw new BadRequestException('Usuário já está participando desta sala.');
+        const jaEstaNaSala = await SalaUsuario.findOne({
+            where: {sala: salaId, usuario: usuario.id}
+        });
+        if (jaEstaNaSala) throw new BadRequestException('Usuário já está participando desta sala.');
 
-        // const novaRelacao = SalaUsuario.create({sala,usuario,}); //todo
-        //
-        // await SalaUsuario.save(novaRelacao);
+        const rl = new SalaUsuario();
+        rl.cargo = TipoUsuario.MEMBRO;
+        rl.sala = sala.id;
+        rl.usuario = usuario.id;
+
+        await SalaUsuario.save(rl);
         return { mensagem: `Usuário ${usuario.nome} entrou na sala ${sala.nome}.` };
     }
 
-    // async sairSala(idSala: number, usuarioToken: any) {
-    //     const relacao = await SalaUsuario.findOne({
-    //     where: { sala: { id: idSala }, usuario: { id: usuarioToken.id } },
-    //     relations: ['sala', 'usuario'],
-    //     });
-    //
-    //     if (!relacao)
-    //         throw new NotFoundException('Usuário não está nesta sala.');
-    //
-    //     await SalaUsuario.remove(relacao);
-    //     return { mensagem: `Usuário ${relacao.usuario.nome} saiu da sala ${relacao.sala.nome}.` };
-    // }
+    async sairSala(salaId: number, loginUsuario: string) {
+        const usuario = await this.usuarioService.buscaPorLogin(loginUsuario);
+        if (!usuario) throw new BadRequestException('Usuário inválido.');
 
-    async removerSala(idSala: number, usuarioToken: any) {
+        const relacao = await SalaUsuario.findOne({
+            where: {sala: salaId, usuario: usuario.id}
+        })
+
+        if (!relacao) throw new NotFoundException('Usuário não está nesta sala.');
+
+        return await SalaUsuario.remove(relacao);
+    }
+
+    async removerSala(idSala: number, loginUsuario: any) {
         const sala = await this.salaRepository.buscaSalaPorId(idSala);
+        const usuario: Usuario = await this.usuarioService.buscaPorLogin(loginUsuario);
         if (!sala) throw new NotFoundException('Sala não encontrada.');
 
-        //todo criar a validação
-        // if (sala.dono.id !== usuarioToken.id)
-        //     throw new ForbiddenException('Apenas o dono da sala pode removê-la.');
-
-        await this.salaRepository.remove(sala);
+        await this.validaPermicaoRemoverSala(sala, usuario)
+        const rlsSalaUsuario = await this.salaRepository.buscaTodasRls(sala)
+        await this.salaRepository.removeRls(sala, rlsSalaUsuario);
         return { mensagem: `Sala '${sala.nome}' removida com sucesso.` };
     }
 
-    async removerUsuarioDaSala(salaId: number, usuarioParaRemoverId: number, nomeUsuario: string) {
+    async removerUsuarioDaSala(salaId: number, usuarioParaRemoverId: number, loginUsuario: string) {
         const sala = await this.salaRepository.buscaSalaPorId(salaId);
-        const usuario: Usuario = await this.usuarioService.buscaPorNome(nomeUsuario);
+        const usuario: Usuario = await this.usuarioService.buscaPorLogin(loginUsuario);
         if (!sala) {
             throw new NotFoundException('Sala não encontrada.');
         }
 
-        await this.validaPermicaoRemover(sala, usuario)
+        await this.validaPermicaoRemoverUsuario(sala, usuario)
+        const rlsSalaUsuario = await this.salaRepository.buscaRlDoUsuario(sala, usuarioParaRemoverId)
 
-        await this.salaRepository.remove(sala);
+        await this.salaRepository.removeRl(rlsSalaUsuario);
         return { mensagem: `Sala '${sala.nome}' removida com sucesso.` };
     }
 
-    async validaPermicaoRemover(sala: Sala, usuario: Usuario) {
-        await this.salaRepository.validaPermicaoRemover(sala, usuario)
+    async validaPermicaoRemoverSala(sala: Sala, usuario: Usuario) {
+        await this.salaRepository.validaPermicaoRemoverSala(sala, usuario)
+    }
+
+    async validaPermicaoRemoverUsuario(sala: Sala, usuario: Usuario) {
+        await this.salaRepository.validaPermicaoRemoverUsuario(sala, usuario)
     }
 
     // async listarMinhasSalas(usuarioToken: any) {
@@ -120,8 +119,8 @@ export class SalaService {
         })
     }
 
-    async enviarMensagemNaSala(salaId: number, conteudo: string, nomeDoUsuario: string) {
-        const remetente: Usuario = await this.usuarioService.buscaPorNome(nomeDoUsuario);
+    async enviarMensagemNaSala(salaId: number, conteudo: string, loginUsuario: string) {
+        const remetente: Usuario = await this.usuarioService.buscaPorLogin(loginUsuario);
         const sala: Sala = await this.buscaSalaPorId(salaId);
         const mensagem = new Mensagem();
         mensagem.remetente = remetente;

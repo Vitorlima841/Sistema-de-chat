@@ -19,10 +19,10 @@ export class SalaUsuario extends BaseEntity{
     @Column({ name: 'cargo' })
     cargo: TipoUsuario;
 
-    @Column({ name: 'fk_enlace' })
+    @Column({ name: 'sala_id' })
     sala: number;
 
-    @Column({ name: 'fk_contrato_aditivo' })
+    @Column({ name: 'usuario_id' })
     usuario: number;
 
     @ManyToOne(() => Usuario, (usuario) => usuario.salasParticipantes)

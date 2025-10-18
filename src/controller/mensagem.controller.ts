@@ -17,6 +17,7 @@ export class MensagemController {
         private readonly mensagemService: MensagemService,
     ) {}
 
+    @ApiOperation({ summary: 'Envia mensagem direta a outro usuário.' })
     @ApiResponse({ status: 200, description: 'Mensagem criada com sucesso' })
     @ApiParam({
         name: 'receiverId',

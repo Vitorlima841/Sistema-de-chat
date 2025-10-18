@@ -16,6 +16,7 @@ export class SalaController {
         private readonly salaService: SalaService,
     ) {}
 
+    @ApiOperation({ summary: 'Cria uma nova sala de chat' })
     @ApiResponse({ status: 201, description: 'Sala criada com sucesso' })
     @Post()
     async criarSala(
@@ -28,6 +29,7 @@ export class SalaController {
         return res.status(HttpStatus.CREATED).send(sala);
     }
 
+    @ApiOperation({ summary: 'Remove uma sala (apenas pelo dono ou administrador)' })
     @ApiResponse({ status: 200, description: 'Sala deletada com sucesso' })
     @ApiParam({
         name: 'id',
@@ -41,6 +43,7 @@ export class SalaController {
         return this.salaService.removerSala(id, usuario["login"]);
     }
 
+    @ApiOperation({ summary: 'Adiciona um usuário autenticado a uma sala' })
     @ApiResponse({ status: 200, description: 'Usuário adicionado com sucesso' })
     @ApiParam({
         name: 'id',
@@ -54,6 +57,7 @@ export class SalaController {
         return this.salaService.entrarSala(id, usuario["login"]);
     }
 
+    @ApiOperation({ summary: 'Remove um usuário autenticado a uma sala' })
     @ApiResponse({ status: 200, description: 'Usuário removido com sucesso' })
     @ApiParam({
         name: 'id',
@@ -67,6 +71,7 @@ export class SalaController {
         return this.salaService.sairSala(id, usuario["login"]);
     }
 
+    @ApiOperation({ summary: 'Remove um usuário específico de uma sala (apenas pelo dono ou administrador)' })
     @ApiResponse({ status: 200, description: 'Usuário removido com sucesso' })
     @ApiParam({
         name: 'roomId',
@@ -90,12 +95,14 @@ export class SalaController {
         return this.salaService.removerUsuarioDaSala(salaId, usuarioParaRemoverId,usuario["login"]);
     }
 
+    @ApiOperation({ summary: 'Lista todas as salas ativas' })
     @ApiResponse({ status: 200, description: 'Salas listadas com sucesso' })
     @Get()
     async listarTodas() {
         return this.salaService.listarSalas();
     }
 
+    @ApiOperation({ summary: 'Envia uma mensagem para uma sala de chat' })
     @Post(":roomId/messages")
     @ApiParam({
         name: 'roomId',
@@ -112,6 +119,7 @@ export class SalaController {
         return this.salaService.enviarMensagemNaSala(salaId, conteudo.conteudo, nomeDoUsuario["login"]);
     }
 
+    @ApiOperation({ summary: 'Recupera o histórico de mensagens de uma sala (com suporte a paginação, se aplicável)' })
     @Get(":roomId/messages")
     @ApiParam({
         name: 'roomId',

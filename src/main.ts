@@ -1,10 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import {DataSource} from "typeorm";
+import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const dataSource = app.get(DataSource);
+  const config = new DocumentBuilder()
+      .setTitle('API de Mensagens')
+      .setDescription('Documentação da API do projeto')
+      .setVersion('1.0')
+      .addTag('mensagens')
+      .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('', app, document);
   await app.listen(3000);
 }
 bootstrap();

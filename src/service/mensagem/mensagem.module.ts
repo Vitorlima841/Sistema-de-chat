@@ -7,8 +7,8 @@ import {UsuarioService} from "../usuario/usuario.service";
 import {UsuarioModule} from "../usuario/usuario.module";
 
 @Module({
-    imports: [MensagemGeteway, UsuarioModule],
-    providers: [MensagemService, MensagemRepository],
+    imports: [UsuarioModule],
+    providers: [MensagemService, MensagemRepository, MensagemGeteway],
     exports: [MensagemService, MensagemRepository],
     controllers: [MensagemController],
 })

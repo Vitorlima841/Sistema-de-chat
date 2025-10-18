@@ -4,9 +4,10 @@ import {AuthUserDto} from "../shared/dto/AuthUser.dto";
 import {UsuarioService} from "../service/usuario/usuario.service";
 import {Public} from "../shared/decorators/public-auth.decorator";
 import {AuthService} from "../service/auth/auth.service";
-import { Response, Request } from 'express';
+import {Response, Request} from 'express';
 import { CriarSalaDto } from 'src/shared/dto/CriarSala.dto';
 import { SalaService } from 'src/service/sala/sala.service';
+import {ApiOperation, ApiResponse} from "@nestjs/swagger";
 
 @Controller('rooms')
 export class SalaController {
@@ -14,6 +15,8 @@ export class SalaController {
         private readonly salaService: SalaService,
     ) {}
 
+    @ApiOperation({ summary: 'Cria uma nova sala de chat' })
+    @ApiResponse({ status: 200, description: 'Sala criada com sucesso' })
     @Post()
     async criarSala(
         @Body() data: CriarSalaDto,
@@ -21,11 +24,11 @@ export class SalaController {
         @Res() res: Response
     ) {
         const nomeDoUsuario = res.status(HttpStatus.OK).send(req["user"]);
-        return this.salaService.criaSala(data, nomeDoUsuario);
+        const sala  = await this.salaService.criaSala(data, nomeDoUsuario);
+        return res.status(HttpStatus.CREATED).send(sala);
     }
 
     @Get()
-    
     async listarTodas() {
         return this.salaService.listarSalas();
     }
@@ -48,6 +51,8 @@ export class SalaController {
         return this.salaService.sairSala(id, usuario);
     }
 
+    @ApiOperation({ summary: 'Remove uma sala (apenas pelo dono ou administrador)' })
+    @ApiResponse({ status: 200, description: 'Sala deletada com sucesso' })
     @Delete(':id')
     async remover(@Param('id') id: number, @Req() req: Request) {
         const usuario = req['user'];

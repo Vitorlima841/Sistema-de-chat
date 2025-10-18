@@ -8,6 +8,7 @@ import { Response, Request } from 'express';
 import { CriarSalaDto } from 'src/shared/dto/CriarSala.dto';
 import { SalaService } from 'src/service/sala/sala.service';
 import {MensagemService} from "../service/mensagem/mensagem.service";
+import {ApiOperation, ApiResponse} from "@nestjs/swagger";
 
 @Controller('messages')
 export class MensagemController {
@@ -15,6 +16,8 @@ export class MensagemController {
         private readonly mensagemService: MensagemService,
     ) {}
 
+    @ApiOperation({ summary: 'Envia mensagem direta a outro usuário.' })
+    @ApiResponse({ status: 200, description: 'Mensagem criada com sucesso' })
     @Post("/direct/:receiverId")
     async enviarMensagemDireta(
         @Param("receiverId") destinatarioId: number,

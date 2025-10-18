@@ -8,7 +8,6 @@ import { SalaRepository } from 'src/repository/sala.repository';
 import { SalaUsuario } from 'src/model/salaUsuario.entity';
 import { TipoUsuario } from 'src/shared/enums/TipoUsuario';
 import { UsuarioService } from '../usuario/usuario.service';
-import { SalaUsuarioRepository } from 'src/repository/salaUsuario.repository';
 import {Mensagem} from "../../model/mensagem.entity";
 
 @Injectable()
@@ -17,7 +16,6 @@ export class SalaService {
        private readonly salaRepository: SalaRepository,
        private readonly usuarioService: UsuarioService,
        private readonly usuarioRepository: UsuarioRepository,
-       private readonly salaUsuarioRepository: SalaUsuarioRepository,
     ) {}
 
     async criaSala(dto: CriarSalaDto, nomeDoUsuario: any) {
@@ -53,21 +51,21 @@ export class SalaService {
 
         if (!usuario) throw new BadRequestException('Usuário inválido.');
 
-        const jaEstaNaSala = await this.salaUsuarioRepository.findOne({
-        where: { sala: { id: idSala }, usuario: { id: usuario.id } },
+        const jaEstaNaSala = await SalaUsuario.findOne({
+            where: { sala: { id: idSala }, usuario: { id: usuario.id } },
         });
 
         if (jaEstaNaSala)
         throw new BadRequestException('Usuário já está participando desta sala.');
 
-        const novaRelacao = this.salaUsuarioRepository.create({sala,usuario,});
+        const novaRelacao = SalaUsuario.create({sala,usuario,});
 
-        await this.salaUsuarioRepository.save(novaRelacao);
+        await SalaUsuario.save(novaRelacao);
         return { mensagem: `Usuário ${usuario.nome} entrou na sala ${sala.nome}.` };
     }
 
     async sairSala(idSala: number, usuarioToken: any) {
-        const relacao = await this.salaUsuarioRepository.findOne({
+        const relacao = await SalaUsuario.findOne({
         where: { sala: { id: idSala }, usuario: { id: usuarioToken.id } },
         relations: ['sala', 'usuario'],
         });

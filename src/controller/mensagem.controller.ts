@@ -22,7 +22,7 @@ export class MensagemController {
         name: 'receiverId',
         required: true,
         description: 'ID do destinatário',
-        example: 7,
+        example: 1,
     })
     @Post("/direct/:receiverId")
     async enviarMensagemDireta(

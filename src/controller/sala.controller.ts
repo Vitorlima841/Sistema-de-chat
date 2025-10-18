@@ -33,7 +33,7 @@ export class SalaController {
         name: 'id',
         required: true,
         description: 'ID da sala',
-        example: 7,
+        example: 1,
     })
     @Delete(':id')
     async remover(@Param('id') id: number, @Req() req: Request) {
@@ -46,7 +46,7 @@ export class SalaController {
         name: 'id',
         required: true,
         description: 'ID da sala',
-        example: 9,
+        example: 1,
     })
     @Post(':id/enter')
     async entrar(@Param('id') id: number, @Req() req: Request) {
@@ -59,7 +59,7 @@ export class SalaController {
         name: 'id',
         required: true,
         description: 'ID da sala',
-        example: 8,
+        example: 1,
     })
     @Post(':id/leave')
     async sair(@Param('id') id: number, @Req() req: Request) {
@@ -72,13 +72,13 @@ export class SalaController {
         name: 'roomId',
         required: true,
         description: 'ID da sala',
-        example: 9,
+        example: 1,
     })
     @ApiParam({
         name: 'userId',
         required: true,
         description: 'ID do usuário',
-        example: 8,
+        example: 1,
     })
     @Delete(':roomId/users/:userId')
     async removerUsuarioDaSala(
@@ -101,7 +101,7 @@ export class SalaController {
         name: 'roomId',
         required: true,
         description: 'ID da sala',
-        example: 13,
+        example: 1,
     })
     async enviarMensagemNaSala(
         @Param("roomId") salaId: number,
@@ -117,7 +117,7 @@ export class SalaController {
         name: 'roomId',
         required: true,
         description: 'ID da sala',
-        example: 13,
+        example: 1,
     })
     async buscarMensagemsDaSala(
         @Param("roomId") salaId: number

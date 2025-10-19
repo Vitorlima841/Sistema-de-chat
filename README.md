@@ -102,7 +102,7 @@ O vídeo (5–10 min) apresenta:
 - Funcionalidades implementadas
 - Desafios e soluções
 - Aprendizados
-Link: [Adicione aqui o link do vídeo]
+Link: a ser adicionado
 
 Equipe
 ------

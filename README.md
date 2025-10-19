@@ -1,6 +1,15 @@
 Chat API – Sistema de Chat em Tempo Real
 =====================================================
 
+Apresentação em Vídeo
+---------------------
+Link: https://drive.google.com/file/d/1ZCsZrCvt-kW2PQEvzX83H0_5afTSpOed/view?usp=drive_link
+
+O vídeo (5–10 min) apresenta:
+- Funcionalidades implementadas
+- Desafios e soluções
+- Aprendizados
+
 Visão Geral
 -----------
 Este projeto implementa uma API RESTful para um sistema de chat em tempo real, desenvolvida com NestJS, TypeScript e MySQL.
@@ -96,13 +105,6 @@ Documentação Swagger
 Disponível em:
 http://localhost:3000/
 
-Apresentação em Vídeo
----------------------
-O vídeo (5–10 min) apresenta:
-- Funcionalidades implementadas
-- Desafios e soluções
-- Aprendizados
-Link: [Adicione aqui o link do vídeo]
 
 Equipe
 ------

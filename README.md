@@ -1,5 +1,6 @@
 Chat API – Sistema de Chat em Tempo Real
 =====================================================
+Alunos: RAMMID ANDREW, VITOR AUGUSTO
 
 Visão Geral
 -----------
